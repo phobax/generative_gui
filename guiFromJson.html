@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>generic gui</title>
+
+    <link href="/style_gui.css" rel="stylesheet" />
+    <script type="text/javascript" src="/util.js"></script>
+
+    <script>
+
+      var data = {
+        center_lat : {
+          type : "number",
+          value : "52.4"
+        },
+        center_lng : {
+          type : "number",
+          value : "13.1"
+        },
+        title : {
+          type : "string",
+          value : "monitor"
+        },
+        show_map : {
+          type : "bool",
+          value : true
+        },
+        show_stops : {
+          type : "bool",
+          value : true
+        },
+        show_routes : {
+          type : "bool",
+          value : true
+        }
+      }
+
+
+      class Gui {
+
+        constructor (data, callback) {
+
+          this.data = data;
+          this.callback = callback;
+          this.divs = [];
+          this.cnt = 0;
+
+          for (var [key, value] of Object.entries(data)) {
+            var div = document.getElementById("template_"+value.type).content.cloneNode(true);
+            div.querySelector(".label").innerHTML = key;
+            div.querySelector(".set").id = key;
+            div.querySelector(".set").addEventListener("click", (evt)=>{this.set(evt.target)})
+
+            switch (value.type) {
+              case "bool":
+                div.querySelector(".input").checked = value.value;
+                break;
+              default:
+                div.querySelector(".input").value = value.value;
+                break;
+            }
+
+            div.querySelector(".guiElementContainer").id = this.cnt;
+            document.getElementById("body").appendChild(div);
+            this.divs.push(document.getElementById(this.cnt));
+
+            this.cnt += 1;
+          }
+        }
+
+        updateAllInputs() {
+
+          for (var div of this.divs) {
+            this.data[div.querySelector(".set").id].value = div.querySelector(".input").value;
+          }
+        }
+
+
+        set (x) {
+          var val;
+          if (x.parentNode.querySelector(".input").type == "checkbox") {
+            val = x.parentNode.querySelector(".input").checked;
+          }
+          else {
+            val = x.parentNode.querySelector(".input").value;
+          }
+          this.data[x.id].value = val;
+
+          this.callback(this.data, x, this);
+        }
+      }
+
+      var gui;
+
+      function init (data, callback) {
+        gui = new Gui (data, callback);
+      }
+      window.onload = () => {
+
+      }
+
+    </script>
+
+
+    <template id="template_string" class="textfield">
+      <div class="guiElementContainer">
+        <div class="label"></div>
+        <input class="input" type="text"></input>
+        <button class="set">set</button>
+      </div>
+    </template>
+
+    <template id="template_number" class="numberfield">
+      <div class="guiElementContainer">
+        <div class="label"></div>
+        <input class="input" type="number"></input>
+        <button class="set">set</button>
+      </div>
+    </template>
+
+    <template id="template_bool" class="xxx">
+      <div class="guiElementContainer">
+        <div class="label"></div>
+        <input class="input set" type="checkbox"></input>
+      </div>
+    </template>
+
+    <template id="template_action" class="xxx">
+      <div class="guiElementContainer">
+        <div class="label"></div>
+        <button class="input set">OK</button>
+      </div>
+    </template>
+
+  </head>
+
+
+  <body id="body">
+
+  </body>
+
+</html>
