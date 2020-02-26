@@ -1,3 +1,7 @@
+function x() {
+  
+}
+
 function getUrlParams() {
     var params = {};
     var parts = window.location.href.replace(/[?&]+([^=&]+)=([^&]*)/gi, function(m,key,value) {
